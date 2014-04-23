@@ -20,6 +20,7 @@ import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.XndLogger;
 import org.jboss.netty.util.ThreadNameDeterminer;
 import org.jboss.netty.util.ThreadRenamingRunnable;
 import org.jboss.netty.util.internal.DeadLockProofWorker;
@@ -192,6 +193,8 @@ abstract class AbstractNioSelector implements NioSelector {
     }
 
     public void run() {
+        String threadName=Thread.currentThread().getName();
+        XndLogger.startServer("AbstractNioSelector.run() 启动"+threadName);
         thread = Thread.currentThread();
         startupLatch.countDown();
 
@@ -205,6 +208,7 @@ abstract class AbstractNioSelector implements NioSelector {
         final long minSelectTimeout = SelectorUtil.SELECT_TIMEOUT_NANOS * 80 / 100;
         boolean wakenupFromLoop = false;
         for (;;) {
+            XndLogger.startServer(threadName+"AbstractNioSelector.run() select一直执行中...");
             wakenUp.set(false);
 
             try {
@@ -337,6 +341,7 @@ abstract class AbstractNioSelector implements NioSelector {
      * the {@link AbstractNioChannel}'s when they get registered
      */
     private void openSelector(ThreadNameDeterminer determiner) {
+        XndLogger.start("AbstractNioSelector.openSelector() 创建Selector");
         try {
             selector = SelectorUtil.open();
         } catch (Throwable t) {
@@ -347,6 +352,7 @@ abstract class AbstractNioSelector implements NioSelector {
         boolean success = false;
         try {
             DeadLockProofWorker.start(executor, newThreadRenamingRunnable(id, determiner));
+            XndLogger.start("AbstractNioSelector.openSelector() 将创建的线程启动");
             success = true;
         } finally {
             if (!success) {

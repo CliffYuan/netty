@@ -18,6 +18,7 @@ package org.jboss.netty.channel;
 import java.net.SocketAddress;
 import java.util.Map;
 
+import org.jboss.netty.logging.XndLogger;
 import org.jboss.netty.util.internal.ConversionUtil;
 
 
@@ -554,10 +555,12 @@ public final class Channels {
      *         bind operation is done
      */
     public static ChannelFuture bind(Channel channel, SocketAddress localAddress) {
+        XndLogger.startServer("Channels.bind() 执行bind操作");
         if (localAddress == null) {
             throw new NullPointerException("localAddress");
         }
         ChannelFuture future = future(channel);
+        XndLogger.startServer("Channels.bind() 执行sendDownstream BOUND localAddress事件");
         channel.getPipeline().sendDownstream(new DownstreamChannelStateEvent(
                 channel, future, ChannelState.BOUND, localAddress));
         return future;

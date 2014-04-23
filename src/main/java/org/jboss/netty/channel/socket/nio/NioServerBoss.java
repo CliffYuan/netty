@@ -15,10 +15,8 @@
  */
 package org.jboss.netty.channel.socket.nio;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelSink;
+import org.jboss.netty.channel.*;
+import org.jboss.netty.logging.XndLogger;
 import org.jboss.netty.util.ThreadNameDeterminer;
 import org.jboss.netty.util.ThreadRenamingRunnable;
 
@@ -51,6 +49,7 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
 
     void bind(final NioServerSocketChannel channel, final ChannelFuture future,
               final SocketAddress localAddress) {
+        XndLogger.startServer("NioServerBoss.bind（） 服务端绑定端口 "+localAddress);
         registerTask(new RegisterTask(channel, future, localAddress));
     }
 

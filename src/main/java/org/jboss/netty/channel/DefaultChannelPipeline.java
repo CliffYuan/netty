@@ -17,6 +17,7 @@ package org.jboss.netty.channel;
 
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.XndLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -570,7 +571,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     public void sendDownstream(ChannelEvent e) {
         DefaultChannelHandlerContext tail = getActualDownstreamContext(this.tail);
         if (tail == null) {
+            XndLogger.processServer("Pipeline.sendDownstream() 执行Downstream事件，没有对应的Handler");
             try {
+                XndLogger.processServer("Pipeline.sendDownstream() 没有对应的Handler，执行ChannelSink.eventSunk()");
                 getSink().eventSunk(this, e);
                 return;
             } catch (Throwable t) {
@@ -578,7 +581,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
                 return;
             }
         }
-
+        XndLogger.processServer("Pipeline.sendDownstream() 执行Downstream事件，继续对应的Handler");
         sendDownstream(tail, e);
     }
 

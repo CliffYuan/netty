@@ -15,6 +15,7 @@
  */
 package org.jboss.netty.channel.socket.nio;
 
+import org.jboss.netty.logging.XndLogger;
 import org.jboss.netty.util.ThreadNameDeterminer;
 
 import java.util.concurrent.Executor;
@@ -52,6 +53,7 @@ public class NioServerBossPool extends AbstractNioBossPool<NioServerBoss> {
 
     @Override
     protected NioServerBoss newBoss(Executor executor) {
+        XndLogger.startServer("NioServerBossPool.newBoss() 创建");
         return new NioServerBoss(executor, determiner);
     }
 }

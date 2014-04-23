@@ -20,6 +20,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.Worker;
 import org.jboss.netty.channel.socket.nio.SocketSendBufferPool.SendBuffer;
+import org.jboss.netty.logging.XndLogger;
 import org.jboss.netty.util.ThreadNameDeterminer;
 import org.jboss.netty.util.ThreadRenamingRunnable;
 
@@ -50,6 +51,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
     AbstractNioWorker(Executor executor, ThreadNameDeterminer determiner) {
         super(executor, determiner);
+
     }
 
     public void executeInIoThread(Runnable task) {

@@ -15,6 +15,7 @@
  */
 package org.jboss.netty.channel.socket.nio;
 
+import org.jboss.netty.logging.XndLogger;
 import org.jboss.netty.util.ThreadNameDeterminer;
 
 import java.util.concurrent.Executor;
@@ -42,6 +43,7 @@ public class NioWorkerPool extends AbstractNioWorkerPool<NioWorker> {
     @Override
     @Deprecated
     protected NioWorker createWorker(Executor executor) {
+        XndLogger.start("创建NioWorker");
         return new NioWorker(executor, determiner);
     }
 }

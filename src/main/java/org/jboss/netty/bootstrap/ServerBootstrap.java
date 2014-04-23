@@ -32,6 +32,7 @@ import org.jboss.netty.channel.DefaultChannelFuture;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.ServerChannelFactory;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.logging.XndLogger;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -356,10 +357,10 @@ public class ServerBootstrap extends Bootstrap {
         public void channelOpen(
                 ChannelHandlerContext ctx,
                 ChannelStateEvent evt) {
-
+            XndLogger.startServer("Binder.channelOpen()");
             try {
                 evt.getChannel().getConfig().setPipelineFactory(getPipelineFactory());
-
+                XndLogger.startServer("Binder.channelOpen() 设置Options参数");
                 // Split options into two categories: parent and child.
                 Map<String, Object> allOptions = getOptions();
                 Map<String, Object> parentOptions = new HashMap<String, Object>();
@@ -378,7 +379,7 @@ public class ServerBootstrap extends Bootstrap {
             } finally {
                 ctx.sendUpstream(evt);
             }
-
+            XndLogger.startServer("Binder.channelOpen() 执行bind操作");
             evt.getChannel().bind(localAddress).addListener(new ChannelFutureListener() {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (future.isSuccess()) {

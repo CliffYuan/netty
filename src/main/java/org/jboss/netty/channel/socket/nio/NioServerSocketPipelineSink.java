@@ -22,6 +22,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelState;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.logging.XndLogger;
 
 import java.net.SocketAddress;
 
@@ -38,6 +39,8 @@ class NioServerSocketPipelineSink extends AbstractNioChannelSink {
     }
 
     private static void handleServerSocket(ChannelEvent e) {
+        XndLogger.processServer("NioServerSocketPipelineSink.handleServerSocket 服务端绑定端口、关闭服务 ChannelState="
+                 +((ChannelStateEvent) e).getState()+",value="+((ChannelStateEvent) e).getValue());
         if (!(e instanceof ChannelStateEvent)) {
             return;
         }
@@ -68,6 +71,8 @@ class NioServerSocketPipelineSink extends AbstractNioChannelSink {
     }
 
     private static void handleAcceptedSocket(ChannelEvent e) {
+        XndLogger.processServer("NioServerSocketPipelineSink.handleAcceptedSocket 接收客户端连接处理，关闭连接、注册事务 ChannelState="
+                +((ChannelStateEvent) e).getState()+",value="+((ChannelStateEvent) e).getValue());
         if (e instanceof ChannelStateEvent) {
             ChannelStateEvent event = (ChannelStateEvent) e;
             NioSocketChannel channel = (NioSocketChannel) event.getChannel();
@@ -92,6 +97,8 @@ class NioServerSocketPipelineSink extends AbstractNioChannelSink {
                 break;
             }
         } else if (e instanceof MessageEvent) {
+            XndLogger.processServer("NioServerSocketPipelineSink.handleAcceptedSocket 信息处理 ChannelState="
+                    +((ChannelStateEvent) e).getState()+",value="+((ChannelStateEvent) e).getValue());
             MessageEvent event = (MessageEvent) e;
             NioSocketChannel channel = (NioSocketChannel) event.getChannel();
             boolean offered = channel.writeBufferQueue.offer(event);
