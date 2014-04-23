@@ -94,6 +94,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
     @Override
     protected void process(Selector selector) throws IOException {
+        XndLogger.processServer(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，主要是read和write");
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
         // check if the set is empty and if so just return to not create garbage by
         // creating a new Iterator every time even if there is nothing to process.

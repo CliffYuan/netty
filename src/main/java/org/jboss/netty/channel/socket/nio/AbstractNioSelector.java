@@ -194,7 +194,7 @@ abstract class AbstractNioSelector implements NioSelector {
 
     public void run() {
         String threadName=Thread.currentThread().getName();
-        XndLogger.startServer("AbstractNioSelector.run() 启动"+threadName);
+        XndLogger.startServer(threadName+" AbstractNioSelector.run() 启动");
         thread = Thread.currentThread();
         startupLatch.countDown();
 
@@ -208,7 +208,7 @@ abstract class AbstractNioSelector implements NioSelector {
         final long minSelectTimeout = SelectorUtil.SELECT_TIMEOUT_NANOS * 80 / 100;
         boolean wakenupFromLoop = false;
         for (;;) {
-            XndLogger.startServer(threadName+"AbstractNioSelector.run() select一直执行中...");
+            XndLogger.startServer(threadName+" AbstractNioSelector.run() select一直执行中...");
             wakenUp.set(false);
 
             try {
@@ -370,6 +370,7 @@ abstract class AbstractNioSelector implements NioSelector {
     }
 
     private void processTaskQueue() {
+        XndLogger.processServer(Thread.currentThread().getName()+" 处理taskQueue中的任务");
         for (;;) {
             final Runnable task = taskQueue.poll();
             if (task == null) {

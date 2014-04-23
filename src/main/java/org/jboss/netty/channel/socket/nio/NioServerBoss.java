@@ -84,6 +84,7 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
 
     @Override
     protected void process(Selector selector) {
+        XndLogger.processServer(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，主要是接收客服端连接");
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
         if (selectedKeys.isEmpty()) {
             return;
