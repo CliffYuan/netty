@@ -103,12 +103,14 @@ public class DiscardClientHandler extends SimpleChannelUpstreamHandler {
         // If you keep writing messages ignoring this property,
         // you will end up with an OutOfMemoryError.
         Channel channel = e.getChannel();
-        while (channel.isWritable()) {
+        int i=10;
+        while (channel.isWritable() && i>0) {
             ChannelBuffer m = nextMessage();
             if (m == null) {
                 break;
             }
             channel.write(m);
+            i--;// TODO XND ADD
         }
     }
 
