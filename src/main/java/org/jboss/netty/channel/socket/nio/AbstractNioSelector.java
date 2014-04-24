@@ -48,11 +48,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  *              .      NioSelector(I)
  *             .         .
  *            .          .
- *       Worker(I)  AbstractNioSelector
- *         .        .       .        .
- *        .       .        .           .
- * AbstractNioWorker    NioServerBoss  NioClientBoss
- *     .      .
+ *       Worker(I)  AbstractNioSelector     Boss(I)
+ *         .        .       .     .         .    .
+ *        .       .          .     .       .    .
+ * AbstractNioWorker          .  NioClientBoss .
+ *      .    .                 .              .
+ *     .      .                  NioServerBoss
  *    .         .
  * NioWorker   NioDatagramWorker
  *
