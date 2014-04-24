@@ -227,7 +227,7 @@ abstract class AbstractNioSelector implements NioSelector {
         final long minSelectTimeout = SelectorUtil.SELECT_TIMEOUT_NANOS * 80 / 100;
         boolean wakenupFromLoop = false;
         for (;;) {
-            XndLogger.startServer(threadName+" AbstractNioSelector.run() select一直执行中...");
+            XndLogger.process(threadName+" AbstractNioSelector.run() select一直执行中...");
             wakenUp.set(false);
 
             try {

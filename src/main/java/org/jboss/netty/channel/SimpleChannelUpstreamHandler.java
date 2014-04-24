@@ -18,6 +18,7 @@ package org.jboss.netty.channel;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.XndLogger;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class SimpleChannelUpstreamHandler implements ChannelUpstreamHandler {
      */
     public void handleUpstream(
             ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-
+        XndLogger.process("SimpleChannelUpstreamHandler.handleUpstream() 处理事件,并且分发到对应操作"+e);
         if (e instanceof MessageEvent) {
             messageReceived(ctx, (MessageEvent) e);
         } else if (e instanceof WriteCompletionEvent) {
