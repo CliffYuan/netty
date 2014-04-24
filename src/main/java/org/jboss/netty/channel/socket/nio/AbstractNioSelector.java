@@ -132,6 +132,7 @@ abstract class AbstractNioSelector implements NioSelector {
 
         if (selector != null) {
             if (wakenUp.compareAndSet(false, true)) {
+                XndLogger.startServer("AbstractNioSelector.registerTask(),唤醒selector对象");
                 selector.wakeup();
             }
         } else {
@@ -213,7 +214,7 @@ abstract class AbstractNioSelector implements NioSelector {
 
     public void run() {
         thread = Thread.currentThread();
-        XndLogger.start(thread.getName()+" AbstractNioSelector.run() 启动");
+        XndLogger.start(" AbstractNioSelector.run() 启动");
         startupLatch.countDown();
 
         int selectReturnsImmediately = 0;
@@ -226,14 +227,14 @@ abstract class AbstractNioSelector implements NioSelector {
         final long minSelectTimeout = SelectorUtil.SELECT_TIMEOUT_NANOS * 80 / 100;
         boolean wakenupFromLoop = false;
         for (;;) {
-            XndLogger.process(thread.getName()+" AbstractNioSelector.run() select一直执行中...");
+            XndLogger.process(" AbstractNioSelector.run() select一直执行中...");
             wakenUp.set(false);
 
             try {
                 long beforeSelect = System.nanoTime();
-                XndLogger.process(thread.getName()+" AbstractNioSelector.run() select start,"+beforeSelect);
+                XndLogger.process(" AbstractNioSelector.run() select start,"+beforeSelect);
                 int selected = select(selector); //TODO 为啥在BOSS端，第一次不block.
-                XndLogger.process(thread.getName()+" AbstractNioSelector.run() select end,selected="+selected+","+(System.nanoTime() - beforeSelect));
+                XndLogger.process(" AbstractNioSelector.run() select end,selected="+selected+","+(System.nanoTime() - beforeSelect));
 
                 if (SelectorUtil.EPOLL_BUG_WORKAROUND && selected == 0 && !wakenupFromLoop && !wakenUp.get()) {
                     long timeBlocked = System.nanoTime() - beforeSelect;
@@ -343,7 +344,7 @@ abstract class AbstractNioSelector implements NioSelector {
                     process(selector);
                 }
             } catch (Throwable t) {
-                XndLogger.process(thread.getName()+" AbstractNioSelector.run() select end,Throwable");
+                XndLogger.process(" AbstractNioSelector.run() select end,Throwable");
                 logger.warn(
                         "Unexpected exception in the selector loop.", t);
 
