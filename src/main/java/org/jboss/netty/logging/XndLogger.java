@@ -22,10 +22,10 @@ public class XndLogger {
     }
 
     public static void start(String msg){
-        System.out.println("启动-"+msg);
+        System.out.println("启动      -"+msg);
     }
 
     public static void process(String msg){
-        System.out.println("处理-"+msg);
+        System.out.println("处理      -"+msg);
     }
 }

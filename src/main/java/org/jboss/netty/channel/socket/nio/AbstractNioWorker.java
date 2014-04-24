@@ -94,12 +94,13 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
     @Override
     protected void process(Selector selector) throws IOException {
-        XndLogger.processServer(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，主要是read和write");
+        XndLogger.process(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，主要是read和write");
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
         // check if the set is empty and if so just return to not create garbage by
         // creating a new Iterator every time even if there is nothing to process.
         // See https://github.com/netty/netty/issues/597
         if (selectedKeys.isEmpty()) {
+            XndLogger.process(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，主要是read和write,没有待处理的SelectionKey");
             return;
         }
         for (Iterator<SelectionKey> i = selectedKeys.iterator(); i.hasNext();) {

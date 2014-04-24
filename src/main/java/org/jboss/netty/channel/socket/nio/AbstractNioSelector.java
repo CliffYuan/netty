@@ -212,9 +212,8 @@ abstract class AbstractNioSelector implements NioSelector {
     }
 
     public void run() {
-        String threadName=Thread.currentThread().getName();
-        XndLogger.startServer(threadName+" AbstractNioSelector.run() 启动");
         thread = Thread.currentThread();
+        XndLogger.start(thread.getName()+" AbstractNioSelector.run() 启动");
         startupLatch.countDown();
 
         int selectReturnsImmediately = 0;
@@ -227,12 +226,15 @@ abstract class AbstractNioSelector implements NioSelector {
         final long minSelectTimeout = SelectorUtil.SELECT_TIMEOUT_NANOS * 80 / 100;
         boolean wakenupFromLoop = false;
         for (;;) {
-            XndLogger.process(threadName+" AbstractNioSelector.run() select一直执行中...");
+            XndLogger.process(thread.getName()+" AbstractNioSelector.run() select一直执行中...");
             wakenUp.set(false);
 
             try {
                 long beforeSelect = System.nanoTime();
+                XndLogger.process(thread.getName()+" AbstractNioSelector.run() select start,"+beforeSelect);
                 int selected = select(selector);
+                XndLogger.process(thread.getName()+" AbstractNioSelector.run() select end,selected="+selected+","+(System.nanoTime() - beforeSelect));
+
                 if (SelectorUtil.EPOLL_BUG_WORKAROUND && selected == 0 && !wakenupFromLoop && !wakenUp.get()) {
                     long timeBlocked = System.nanoTime() - beforeSelect;
 
@@ -389,12 +391,13 @@ abstract class AbstractNioSelector implements NioSelector {
     }
 
     private void processTaskQueue() {
-        XndLogger.processServer(Thread.currentThread().getName()+" 处理taskQueue中的任务");
+        XndLogger.process(Thread.currentThread().getName()+" 处理taskQueue中的任务");
         for (;;) {
             final Runnable task = taskQueue.poll();
             if (task == null) {
                 break;
             }
+            XndLogger.process(Thread.currentThread().getName()+" 处理任务"+task);
             task.run();
             try {
                 cleanUpCancelledKeys();
