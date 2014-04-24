@@ -41,6 +41,24 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ *                  Runnable(I)
+ *                .      .
+ *               .       .
+ *              .      NioSelector(I)
+ *             .         .
+ *            .          .
+ *       Worker(I)  AbstractNioSelector
+ *         .        .       .        .
+ *        .       .        .           .
+ * AbstractNioWorker    NioServerBoss  NioClientBoss
+ *     .      .
+ *    .         .
+ * NioWorker   NioDatagramWorker
+ *
+ *
+ */
+
 abstract class AbstractNioSelector implements NioSelector {
 
     private static final AtomicInteger nextId = new AtomicInteger();
