@@ -84,10 +84,10 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
 
     @Override
     protected void process(Selector selector) {
-        XndLogger.processServer(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，主要是接收客服端连接");
+        XndLogger.processServer("NioServerBoss.process() 处理Selector到的selectedKeys开始，主要是接收客服端连接");
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
         if (selectedKeys.isEmpty()) {
-            XndLogger.processServer(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，没有代处理的SelectionKey");
+            XndLogger.processServer("NioServerBoss.process() 处理Selector到的selectedKeys开始，没有代处理的SelectionKey");
             return;
         }
         for (Iterator<SelectionKey> i = selectedKeys.iterator(); i.hasNext();) {
@@ -131,6 +131,7 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
     private static void registerAcceptedChannel(NioServerSocketChannel parent, SocketChannel acceptedSocket,
                                          Thread currentThread) {
         try {
+            XndLogger.processServer("NioServerBoss.registerAcceptedChannel() 获取SocketChannel，创建NioAcceptedSocketChannel并添加到NioWorker的队列中");
             ChannelSink sink = parent.getPipeline().getSink(); //boss 和 Work使用的是同一个sink.
             ChannelPipeline pipeline =
                     parent.getConfig().getPipelineFactory().getPipeline();//todo  这个地方获取的是处理任务的Pipeline   add by xnd

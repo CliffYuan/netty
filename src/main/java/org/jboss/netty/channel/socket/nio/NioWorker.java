@@ -48,6 +48,7 @@ public class NioWorker extends AbstractNioWorker {
 
     @Override
     protected boolean read(SelectionKey k) {
+        XndLogger.process("NioWorker.read() 创建ByteBuffer和读取数据");
         final SocketChannel ch = (SocketChannel) k.channel();
         final NioSocketChannel channel = (NioSocketChannel) k.attachment();
 
@@ -77,7 +78,7 @@ public class NioWorker extends AbstractNioWorker {
 
         if (readBytes > 0) {
             bb.flip();
-
+            XndLogger.process("NioWorker.read() 将读取到的数据从ByteBuffer写入到ChannelBuffer");
             final ChannelBuffer buffer = bufferFactory.getBuffer(readBytes);
             buffer.setBytes(0, bb);
             buffer.writerIndex(readBytes);
@@ -85,6 +86,7 @@ public class NioWorker extends AbstractNioWorker {
             // Update the predictor.
             predictor.previousReceiveBufferSize(readBytes);
 
+            XndLogger.process("NioWorker.read() 触发fireMessageReceived事件");
             // Fire the event.
             fireMessageReceived(channel, buffer);
         }
