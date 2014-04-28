@@ -16,6 +16,7 @@
 package org.jboss.netty.example.discard;
 
 import java.net.InetSocketAddress;
+import java.nio.channels.SelectionKey;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -54,12 +55,16 @@ public class DiscardServer {
     }
 
     public static void main(String[] args) throws Exception {
-        int port;
-        if (args.length > 0) {
-            port = Integer.parseInt(args[0]);
-        } else {
-            port = 8080;
-        }
-        new DiscardServer(port).run();
+        System.out.println(SelectionKey.OP_READ);
+        System.out.println(SelectionKey.OP_ACCEPT);
+        System.out.println(SelectionKey.OP_CONNECT);
+        System.out.println(SelectionKey.OP_WRITE);
+//        int port;
+//        if (args.length > 0) {
+//            port = Integer.parseInt(args[0]);
+//        } else {
+//            port = 8080;
+//        }
+//        new DiscardServer(port).run();
     }
 }

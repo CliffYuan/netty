@@ -131,9 +131,9 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
     private static void registerAcceptedChannel(NioServerSocketChannel parent, SocketChannel acceptedSocket,
                                          Thread currentThread) {
         try {
-            ChannelSink sink = parent.getPipeline().getSink();
+            ChannelSink sink = parent.getPipeline().getSink(); //boss 和 Work使用的是同一个sink.
             ChannelPipeline pipeline =
-                    parent.getConfig().getPipelineFactory().getPipeline();
+                    parent.getConfig().getPipelineFactory().getPipeline();//todo  这个地方获取的是处理任务的Pipeline   add by xnd
             NioWorker worker = parent.workerPool.nextWorker();
             worker.register(new NioAcceptedSocketChannel(
                     parent.getFactory(), pipeline, parent, sink

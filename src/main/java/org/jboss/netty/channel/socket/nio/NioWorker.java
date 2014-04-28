@@ -21,6 +21,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelException;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ReceiveBufferSizePredictor;
+import org.jboss.netty.logging.XndLogger;
 import org.jboss.netty.util.ThreadNameDeterminer;
 
 import java.io.IOException;
@@ -134,7 +135,7 @@ public class NioWorker extends AbstractNioWorker {
         public void run() {
             SocketAddress localAddress = channel.getLocalAddress();
             SocketAddress remoteAddress = channel.getRemoteAddress();
-
+            XndLogger.process("NioWorker.RegisterTask.run() 接收客户端连接，localAddress="+localAddress+",remoteAddress="+remoteAddress);
             if (localAddress == null || remoteAddress == null) {
                 if (future != null) {
                     future.setFailure(new ClosedChannelException());
@@ -147,7 +148,7 @@ public class NioWorker extends AbstractNioWorker {
                 if (server) {
                     channel.channel.configureBlocking(false);
                 }
-
+                XndLogger.process("NioWorker.RegisterTask.run() 接收客户端连接，注册 "+channel.getRawInterestOps()+" 事件");
                 channel.channel.register(
                         selector, channel.getRawInterestOps(), channel);
 

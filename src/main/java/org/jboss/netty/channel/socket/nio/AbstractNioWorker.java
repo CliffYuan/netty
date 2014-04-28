@@ -94,13 +94,13 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
     @Override
     protected void process(Selector selector) throws IOException {
-        XndLogger.process(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，主要是read和write");
+        XndLogger.process("处理Selector到的selectedKeys开始，主要是read和write");
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
         // check if the set is empty and if so just return to not create garbage by
         // creating a new Iterator every time even if there is nothing to process.
         // See https://github.com/netty/netty/issues/597
         if (selectedKeys.isEmpty()) {
-            XndLogger.process(Thread.currentThread().getName()+" 处理Selector到的selectedKeys开始，主要是read和write,没有待处理的SelectionKey");
+            XndLogger.process("处理Selector到的selectedKeys开始，主要是read和write,没有待处理的SelectionKey");
             return;
         }
         for (Iterator<SelectionKey> i = selectedKeys.iterator(); i.hasNext();) {
@@ -109,12 +109,14 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
             try {
                 int readyOps = k.readyOps();
                 if ((readyOps & SelectionKey.OP_READ) != 0 || readyOps == 0) {
+                    XndLogger.process("处理Selector到的selectedKeys,读数据SelectionKey="+k);
                     if (!read(k)) {
                         // Connection already closed - no need to handle write.
                         continue;
                     }
                 }
                 if ((readyOps & SelectionKey.OP_WRITE) != 0) {
+                    XndLogger.process("处理Selector到的selectedKeys,写数据SelectionKey="+k);
                     writeFromSelectorLoop(k);
                 }
             } catch (CancelledKeyException e) {
