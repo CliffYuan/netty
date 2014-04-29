@@ -393,13 +393,13 @@ abstract class AbstractNioSelector implements NioSelector {
     }
 
     private void processTaskQueue() {
-        XndLogger.process(Thread.currentThread().getName()+" 处理taskQueue中的任务start");
+        XndLogger.process(" 处理taskQueue中的任务start");
         for (;;) {
             final Runnable task = taskQueue.poll();
             if (task == null) {
                 break;
             }
-            XndLogger.process(Thread.currentThread().getName()+" 处理任务"+task);
+            XndLogger.process(" 处理任务"+task);
             task.run();
             try {
                 cleanUpCancelledKeys();
@@ -407,7 +407,7 @@ abstract class AbstractNioSelector implements NioSelector {
                 // Ignore
             }
         }
-        XndLogger.process(Thread.currentThread().getName()+" 处理taskQueue中的任务end");
+        XndLogger.process(" 处理taskQueue中的任务end");
     }
 
     protected final void increaseCancelledKeys() {
