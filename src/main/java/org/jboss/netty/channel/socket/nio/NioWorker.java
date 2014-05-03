@@ -62,6 +62,7 @@ public class NioWorker extends AbstractNioWorker {
         boolean failure = true;
 
         ByteBuffer bb = recvBufferPool.get(predictedRecvBufSize).order(bufferFactory.getDefaultOrder());
+        XndLogger.process("NioWorker.read(),ByteBuffer大小："+ bb.capacity());
         try {
             while ((ret = ch.read(bb)) > 0) {
                 readBytes += ret;
@@ -78,7 +79,7 @@ public class NioWorker extends AbstractNioWorker {
 
         if (readBytes > 0) {
             bb.flip();
-            XndLogger.process("NioWorker.read() 将读取到的数据从ByteBuffer写入到ChannelBuffer");
+            XndLogger.process("NioWorker.read() 将读取到的数据从ByteBuffer写入到ChannelBuffer,共"+readBytes+" 个字节");
             final ChannelBuffer buffer = bufferFactory.getBuffer(readBytes);
             buffer.setBytes(0, bb);
             buffer.writerIndex(readBytes);
