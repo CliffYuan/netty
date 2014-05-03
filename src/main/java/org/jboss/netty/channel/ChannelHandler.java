@@ -26,6 +26,24 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ *
+ *                  ChannelHandler(I)
+ *                   .              .
+ *                  .                 .
+ *     ChannelUpstreamHandler(I)   ChannelDownstreamHandler(I)
+ *               .                          .
+ *              .                             .
+ *  SimpleChannelUpstreamHandler    SimpleChannelDownstreamHandler
+ *
+ *
+ * ChannelUpstreamHandler有handleUpstream方法，
+ * ChannelDownstreamHandler有handleDownstream方法，
+ * 调用方组装ChannelEvent对象，SimpleChannelUpstreamHandler然后根据ChannelEvent类型执行不同的方法：
+ * 如：messageReceived，writeRequested等
+ *
+ * 用户自己的Handler只需要继承SimpleChannelUpstreamHandler，SimpleChannelDownstreamHandler重写对应的方法即可。
+ *
+ *
  * Handles or intercepts a {@link ChannelEvent}, and sends a
  * {@link ChannelEvent} to the next handler in a {@link ChannelPipeline}.
  *
