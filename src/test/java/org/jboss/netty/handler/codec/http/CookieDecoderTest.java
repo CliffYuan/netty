@@ -285,7 +285,8 @@ public class CookieDecoderTest {
 
         c = it.next();
         assertEquals("c", c.getName());
-        assertEquals("\"1\"2\"", c.getValue());
+        assertEquals("1\"2", c.getValue());
+        assertTrue(c.wrap());
 
         c = it.next();
         assertEquals("d", c.getName());
@@ -293,7 +294,8 @@ public class CookieDecoderTest {
 
         c = it.next();
         assertEquals("e", c.getName());
-        assertEquals("\"\"", c.getValue());
+        assertEquals("", c.getValue());
+        assertTrue(c.wrap());
 
         c = it.next();
         assertEquals("f", c.getName());

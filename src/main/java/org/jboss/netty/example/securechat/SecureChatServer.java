@@ -15,25 +15,26 @@
  */
 package org.jboss.netty.example.securechat;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.example.telnet.TelnetServer;
+import org.jboss.netty.handler.ssl.SslContext;
+import org.jboss.netty.handler.ssl.util.SelfSignedCertificate;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 
 /**
  * Simple SSL chat server modified from {@link TelnetServer}.
  */
-public class SecureChatServer {
+public final class SecureChatServer {
 
-    private final int port;
+    static final int PORT = Integer.parseInt(System.getProperty("port", "8992"));
 
-    public SecureChatServer(int port) {
-        this.port = port;
-    }
+    public static void main(String[] args) throws Exception {
+        SelfSignedCertificate ssc = new SelfSignedCertificate();
+        SslContext sslCtx = SslContext.newServerContext(ssc.certificate(), ssc.privateKey());
 
-    public void run() {
         // Configure the server.
         ServerBootstrap bootstrap = new ServerBootstrap(
                 new NioServerSocketChannelFactory(
@@ -41,19 +42,9 @@ public class SecureChatServer {
                         Executors.newCachedThreadPool()));
 
         // Configure the pipeline factory.
-        bootstrap.setPipelineFactory(new SecureChatServerPipelineFactory());
+        bootstrap.setPipelineFactory(new SecureChatServerPipelineFactory(sslCtx));
 
         // Bind and start to accept incoming connections.
-        bootstrap.bind(new InetSocketAddress(port));
-    }
-
-    public static void main(String[] args) throws Exception {
-        int port;
-        if (args.length > 0) {
-            port = Integer.parseInt(args[0]);
-        } else {
-            port = 8443;
-        }
-        new SecureChatServer(port).run();
+        bootstrap.bind(new InetSocketAddress(PORT));
     }
 }

@@ -43,15 +43,9 @@ public class InternalLoggerFactoryTest {
         InternalLoggerFactory.setDefaultFactory(oldLoggerFactory);
     }
 
-
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullDefaultFactory() {
         InternalLoggerFactory.setDefaultFactory(null);
-    }
-
-    @Test
-    public void shouldReturnWrappedLogger() {
-        assertNotSame(mock, InternalLoggerFactory.getInstance("mock"));
     }
 
     @Test

@@ -15,8 +15,6 @@
  */
 package org.jboss.netty.handler.codec.compression;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -31,6 +29,8 @@ import org.jboss.netty.handler.codec.oneone.OneToOneStrictEncoder;
 import org.jboss.netty.util.internal.jzlib.JZlib;
 import org.jboss.netty.util.internal.jzlib.ZStream;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * Compresses a {@link ChannelBuffer} using the deflate algorithm.
@@ -41,6 +41,7 @@ public class ZlibEncoder extends OneToOneStrictEncoder implements LifeCycleAware
 
     private static final byte[] EMPTY_ARRAY = new byte[0];
 
+    private final int wrapperOverhead;
     private final ZStream z = new ZStream();
     private final AtomicBoolean finished = new AtomicBoolean();
     private volatile ChannelHandlerContext ctx;
@@ -143,6 +144,8 @@ public class ZlibEncoder extends OneToOneStrictEncoder implements LifeCycleAware
                     "allowed for compression.");
         }
 
+        wrapperOverhead = ZlibUtil.wrapperOverhead(wrapper);
+
         synchronized (z) {
             int resultCode = z.deflateInit(compressionLevel, windowBits, memLevel,
                     ZlibUtil.convertWrapperType(wrapper));
@@ -228,6 +231,8 @@ public class ZlibEncoder extends OneToOneStrictEncoder implements LifeCycleAware
             throw new NullPointerException("dictionary");
         }
 
+        wrapperOverhead = ZlibUtil.wrapperOverhead(ZlibWrapper.ZLIB);
+
         synchronized (z) {
             int resultCode;
             resultCode = z.deflateInit(compressionLevel, windowBits, memLevel,
@@ -261,25 +266,30 @@ public class ZlibEncoder extends OneToOneStrictEncoder implements LifeCycleAware
             return msg;
         }
 
-        ChannelBuffer result;
+        final ChannelBuffer result;
         synchronized (z) {
             try {
                 // Configure input.
-                ChannelBuffer uncompressed = (ChannelBuffer) msg;
-                byte[] in = new byte[uncompressed.readableBytes()];
+                final ChannelBuffer uncompressed = (ChannelBuffer) msg;
+                final int uncompressedLen = uncompressed.readableBytes();
+                if (uncompressedLen == 0) {
+                    return uncompressed;
+                }
+
+                final byte[] in = new byte[uncompressedLen];
                 uncompressed.readBytes(in);
                 z.next_in = in;
                 z.next_in_index = 0;
-                z.avail_in = in.length;
+                z.avail_in = uncompressedLen;
 
                 // Configure output.
-                byte[] out = new byte[(int) Math.ceil(in.length * 1.001) + 12];
+                final byte[] out = new byte[(int) Math.ceil(uncompressedLen * 1.001) + 12 + wrapperOverhead];
                 z.next_out = out;
                 z.next_out_index = 0;
                 z.avail_out = out.length;
 
                 // Note that Z_PARTIAL_FLUSH has been deprecated.
-                int resultCode = z.deflate(JZlib.Z_SYNC_FLUSH);
+                final int resultCode = z.deflate(JZlib.Z_SYNC_FLUSH);
                 if (resultCode != JZlib.Z_OK) {
                     ZlibUtil.fail(z, "compression failure", resultCode);
                 }

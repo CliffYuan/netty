@@ -15,14 +15,16 @@
  */
 package org.jboss.netty.example.portunification;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.ssl.SslContext;
+import org.jboss.netty.handler.ssl.util.SelfSignedCertificate;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 
 /**
  * Serves two protocols (HTTP and Factorial) using only one port, enabling
@@ -31,15 +33,15 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  * Because SSL and GZIP are enabled on demand, 5 combinations per protocol
  * are possible: none, SSL only, GZIP only, SSL + GZIP, and GZIP + SSL.
  */
-public class PortUnificationServer {
+public final class PortUnificationServer {
 
-    private final int port;
+    static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
 
-    public PortUnificationServer(int port) {
-        this.port = port;
-    }
+    public static void main(String[] args) throws Exception {
+        // Configure SSL context
+        SelfSignedCertificate ssc = new SelfSignedCertificate();
+        final SslContext sslCtx = SslContext.newServerContext(ssc.certificate(), ssc.privateKey());
 
-    public void run() {
         // Configure the server.
         ServerBootstrap bootstrap = new ServerBootstrap(
                 new NioServerSocketChannelFactory(
@@ -48,22 +50,12 @@ public class PortUnificationServer {
 
         // Set up the event pipeline factory.
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() throws Exception {
-                return Channels.pipeline(new PortUnificationServerHandler());
+            public ChannelPipeline getPipeline() {
+                return Channels.pipeline(new PortUnificationServerHandler(sslCtx));
             }
         });
 
         // Bind and start to accept incoming connections.
-        bootstrap.bind(new InetSocketAddress(port));
-    }
-
-    public static void main(String[] args) throws Exception {
-        int port;
-        if (args.length > 0) {
-            port = Integer.parseInt(args[0]);
-        } else {
-            port = 8080;
-        }
-        new PortUnificationServer(port).run();
+        bootstrap.bind(new InetSocketAddress(PORT));
     }
 }
