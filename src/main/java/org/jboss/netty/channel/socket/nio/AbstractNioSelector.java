@@ -232,16 +232,13 @@ abstract class AbstractNioSelector implements NioSelector {
 
             try {
                 long beforeSelect = System.nanoTime();
-<<<<<<< HEAD
+
                 XndLogger.process(" AbstractNioSelector.run() select start,"+beforeSelect);
                 int selected = select(selector); //TODO 为啥在BOSS端，第一次block,然后加入task后，wakeup. 第一次不block.
                 XndLogger.process(" AbstractNioSelector.run() select end,selected="+selected+","+(System.nanoTime() - beforeSelect));
 
-                if (SelectorUtil.EPOLL_BUG_WORKAROUND && selected == 0 && !wakenupFromLoop && !wakenUp.get()) {
-=======
-                int selected = select(selector);
                 if (selected == 0 && !wakenupFromLoop && !wakenUp.get()) {
->>>>>>> 6e2d2ce9983b0e4926b3e0bd0419cffe19e36349
+
                     long timeBlocked = System.nanoTime() - beforeSelect;
                     if (timeBlocked < minSelectTimeout) {
                         boolean notConnected = false;
