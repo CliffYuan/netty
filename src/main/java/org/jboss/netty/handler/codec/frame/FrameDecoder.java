@@ -302,14 +302,14 @@ public abstract class FrameDecoder extends SimpleChannelUpstreamHandler implemen
                 // the cumulation buffer is not created yet so just pass the input to callDecode(...) method
                 callDecode(ctx, e.getChannel(), input, e.getRemoteAddress());
             } finally {
-                updateCumulation(ctx, input);
+                updateCumulation(ctx, input);//todo 合并剩下的包
             }
         } else {
             input = appendToCumulation(input);
             try {
                 callDecode(ctx, e.getChannel(), input, e.getRemoteAddress());
             } finally {
-                updateCumulation(ctx, input);
+                updateCumulation(ctx, input);//todo 合并剩下的包
             }
         }
     }

@@ -37,6 +37,7 @@ import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
 public interface ChannelPipelineFactory {
 
     /**
+     * 一个连接一个ChannelPipeline,也就每个连接各种对应自己的一串Handler
      * Returns a newly created {@link ChannelPipeline}.
      */
     ChannelPipeline getPipeline() throws Exception;
