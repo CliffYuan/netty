@@ -200,7 +200,7 @@ final class SocketSendBufferPool implements ExternalResourceReleasable {
         }
 
         public final long transferTo(WritableByteChannel ch) throws IOException {
-            return ch.write(buffer);
+            return ch.write(buffer);//buffer == DirectByteBuffer
         }
 
         public final long transferTo(DatagramChannel ch, SocketAddress raddr) throws IOException {

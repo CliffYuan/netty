@@ -184,7 +184,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
             channel.inWriteNowLoop = true;
             for (;;) {
 
-                MessageEvent evt = channel.currentWriteEvent;
+                MessageEvent evt = channel.currentWriteEvent;//上一次写完了，这个对象会制空，见221行
                 SendBuffer buf = null;
                 ChannelFuture future = null;
                 try {
@@ -203,8 +203,8 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
                     }
 
                     long localWrittenBytes = 0;
-                    for (int i = writeSpinCount; i > 0; i --) {
-                        localWrittenBytes = buf.transferTo(ch);
+                    for (int i = writeSpinCount; i > 0; i --) {//因nonblocking ,需要循环写，直到全部write完成
+                        localWrittenBytes = buf.transferTo(ch);//UnpooledSendBuffer.transferTo(SocketChannel)
                         if (localWrittenBytes != 0) {
                             writtenBytes += localWrittenBytes;
                             break;

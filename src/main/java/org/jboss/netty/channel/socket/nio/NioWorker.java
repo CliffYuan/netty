@@ -93,6 +93,7 @@ public class NioWorker extends AbstractNioWorker {
         }
 
         if (ret < 0 || failure) {
+            XndLogger.process("NioWorker.read() 触发读取字节小于0,等于："+ret+"，或者发生了异常，关闭channel");//默认是-1
             k.cancel(); // Some JDK implementations run into an infinite loop without this.
             close(channel, succeededFuture(channel));
             return false;
