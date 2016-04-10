@@ -72,7 +72,7 @@ class NioServerSocketPipelineSink extends AbstractNioChannelSink {
 
     private static void handleAcceptedSocket(ChannelEvent e) {
         XndLogger.processServer("NioServerSocketPipelineSink.handleAcceptedSocket 接收客户端连接处理，关闭连接、注册事务 ChannelState="
-                +((ChannelStateEvent) e).getState()+",value="+((ChannelStateEvent) e).getValue());
+                +e);
         if (e instanceof ChannelStateEvent) {
             ChannelStateEvent event = (ChannelStateEvent) e;
             NioSocketChannel channel = (NioSocketChannel) event.getChannel();
@@ -98,7 +98,7 @@ class NioServerSocketPipelineSink extends AbstractNioChannelSink {
             }
         } else if (e instanceof MessageEvent) {
             XndLogger.processServer("NioServerSocketPipelineSink.handleAcceptedSocket 信息处理 ChannelState="
-                    +((ChannelStateEvent) e).getState()+",value="+((ChannelStateEvent) e).getValue());
+                    +e);
             MessageEvent event = (MessageEvent) e;
             NioSocketChannel channel = (NioSocketChannel) event.getChannel();
             boolean offered = channel.writeBufferQueue.offer(event);

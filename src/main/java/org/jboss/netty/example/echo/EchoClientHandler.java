@@ -23,6 +23,7 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -34,6 +35,7 @@ public class EchoClientHandler extends SimpleChannelUpstreamHandler {
 
     private final ChannelBuffer firstMessage;
     private final AtomicLong transferredBytes = new AtomicLong();
+    private final AtomicInteger count=new AtomicInteger(1);
 
     /**
      * Creates a client-side handler.
@@ -60,7 +62,13 @@ public class EchoClientHandler extends SimpleChannelUpstreamHandler {
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
         // Send back the received message to the remote peer.
         transferredBytes.addAndGet(((ChannelBuffer) e.getMessage()).readableBytes());
-        e.getChannel().write(e.getMessage());
+        if(count.get()<11){
+            e.getChannel().write(e.getMessage());
+            count.incrementAndGet();
+        }else {
+            e.getChannel().close();
+        }
+
     }
 
     @Override

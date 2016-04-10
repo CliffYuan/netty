@@ -340,7 +340,7 @@ abstract class AbstractNioSelector implements NioSelector {
                 }
 
                 cancelledKeys = 0;
-                processTaskQueue();
+                processTaskQueue();   //先写在进行读，解决因对方进程挂了，先read则无限等待，而先write，后read捕获write的错误，自己认为在这。。http://www.cnblogs.com/promise6522/archive/2012/03/03/2377935.html
                 selector = this.selector; // processTaskQueue() can call rebuildSelector()
 
                 if (shutdown) {
