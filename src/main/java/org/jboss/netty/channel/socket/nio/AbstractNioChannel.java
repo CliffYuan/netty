@@ -154,13 +154,18 @@ abstract class AbstractNioChannel<C extends SelectableChannel & WritableByteChan
     public abstract NioChannelConfig getConfig();
 
     int getRawInterestOps() {
-        return super.getInterestOps();
+        return super.getInterestOps();//默认READ事件
     }
 
     void setRawInterestOpsNow(int interestOps) {
         setInterestOpsNow(interestOps);
     }
 
+
+    /**
+     * 通过待发生数据及水位判断是否需要注册写事件
+     * @return
+     */
     @Override
     public int getInterestOps() {
         if (!isOpen()) {
@@ -280,7 +285,7 @@ abstract class AbstractNioChannel<C extends SelectableChannel & WritableByteChan
 
             int messageSize = getMessageSize(e);
             int newWriteBufferSize = writeBufferSize.addAndGet(messageSize);
-            int highWaterMark =  getConfig().getWriteBufferHighWaterMark();
+            int highWaterMark =  getConfig().getWriteBufferHighWaterMark();//高水位
 
             if (newWriteBufferSize >= highWaterMark) {
                 if (newWriteBufferSize - messageSize < highWaterMark) {

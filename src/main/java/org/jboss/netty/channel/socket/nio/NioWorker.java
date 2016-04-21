@@ -108,7 +108,7 @@ public class NioWorker extends AbstractNioWorker {
         final Thread workerThread = thread;
         if (currentThread != workerThread) {
             if (channel.writeTaskInTaskQueue.compareAndSet(false, true)) {
-                registerTask(channel.writeTask);
+                registerTask(channel.writeTask);//这个task也是执行写操作。
             }
 
             return true;
@@ -154,7 +154,7 @@ public class NioWorker extends AbstractNioWorker {
                 }
                 XndLogger.process("NioWorker.RegisterTask.run() 接收客户端连接，注册 "+channel.getRawInterestOps()+" 事件");
                 channel.channel.register(
-                        selector, channel.getRawInterestOps(), channel);
+                        selector, channel.getRawInterestOps(), channel);//接收客户端连接默认注册read事件
 
                 if (future != null) {
                     channel.setConnected();

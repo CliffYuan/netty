@@ -135,11 +135,11 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
             return;
         }
 
-        if (scheduleWriteIfNecessary(channel)) {
+        if (scheduleWriteIfNecessary(channel)) { //通过writeTask最后调用下面的writeFromTaskLoop（）
             return;
         }
 
-        // From here, we are sure Thread.currentThread() == workerThread.
+        // From here, we are sure Thread.currentThread() == workerThread. 当前线程就是work io线程
 
         if (channel.writeSuspended) {
             return;
@@ -152,12 +152,23 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
         write0(channel);
     }
 
+    /**
+     * nio worker 线程调用处理
+     * 处理注册的task
+     * @param ch
+     */
     void writeFromTaskLoop(AbstractNioChannel<?> ch) {
         if (!ch.writeSuspended) {
             write0(ch);
         }
     }
 
+    /**
+     * nio worker 线程调用处理
+     * 前提是：1.注册了write事件。
+     *         2.有待写的缓存空间
+     * @param k
+     */
     void writeFromSelectorLoop(final SelectionKey k) {
         AbstractNioChannel<?> ch = (AbstractNioChannel<?>) k.attachment();
         ch.writeSuspended = false;
@@ -166,9 +177,14 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
     protected abstract boolean scheduleWriteIfNecessary(AbstractNioChannel<?> channel);
 
+    /**
+     * 当一次性没有写完，则注册OP_WRITE事件
+     *
+     * @param channel
+     */
     protected void write0(AbstractNioChannel<?> channel) {
         boolean open = true;
-        boolean addOpWrite = false;
+        boolean addOpWrite = false;//添加写事件标示
         boolean removeOpWrite = false;
         boolean iothread = isIoThread(channel);
 
@@ -184,7 +200,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
             channel.inWriteNowLoop = true;
             for (;;) {
 
-                MessageEvent evt = channel.currentWriteEvent;//上一次写完了，这个对象会制空，见221行
+                MessageEvent evt = channel.currentWriteEvent;//上一次写完了，这个对象会制空，见221行,第一次也是null
                 SendBuffer buf = null;
                 ChannelFuture future = null;
                 try {
@@ -196,7 +212,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
                         }
                         future = evt.getFuture();
 
-                        channel.currentWriteBuffer = buf = sendBufferPool.acquire(evt.getMessage());
+                        channel.currentWriteBuffer = buf = sendBufferPool.acquire(evt.getMessage());//构造发送buf对象
                     } else {
                         future = evt.getFuture();
                         buf = channel.currentWriteBuffer;
@@ -204,7 +220,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
                     long localWrittenBytes = 0;
                     for (int i = writeSpinCount; i > 0; i --) {//因nonblocking ,需要循环写，直到全部write完成
-                        localWrittenBytes = buf.transferTo(ch);//UnpooledSendBuffer.transferTo(SocketChannel)
+                        localWrittenBytes = buf.transferTo(ch);//其实是UnpooledSendBuffer.transferTo(SocketChannel)
                         if (localWrittenBytes != 0) {
                             writtenBytes += localWrittenBytes;
                             break;
@@ -226,7 +242,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
                         future.setSuccess();
                     } else {
                         // Not written fully - perhaps the kernel buffer is full.
-                        addOpWrite = true;
+                        addOpWrite = true;//没有写完，则添加write事件.............................待缓冲区空了触发写
                         channel.writeSuspended = true;
 
                         if (writtenBytes > 0) {
@@ -285,7 +301,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
             //
             if (open) {
                 if (addOpWrite) {
-                    setOpWrite(channel);
+                    setOpWrite(channel);//注册写事件
                 } else if (removeOpWrite) {
                     clearOpWrite(channel);
                 }

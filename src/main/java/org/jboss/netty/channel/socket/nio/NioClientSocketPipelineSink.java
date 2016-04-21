@@ -79,7 +79,7 @@ class NioClientSocketPipelineSink extends AbstractNioChannelSink {
         } else if (e instanceof MessageEvent) {
             MessageEvent event = (MessageEvent) e;
             NioSocketChannel channel = (NioSocketChannel) event.getChannel();
-            boolean offered = channel.writeBufferQueue.offer(event);
+            boolean offered = channel.writeBufferQueue.offer(event);//1.待写的数据先放到queue中。
             assert offered;
             channel.worker.writeFromUserCode(channel);
         }

@@ -39,8 +39,8 @@ class DefaultNioSocketChannelConfig extends DefaultSocketChannelConfig
     private static final ReceiveBufferSizePredictorFactory DEFAULT_PREDICTOR_FACTORY =
         new AdaptiveReceiveBufferSizePredictorFactory();
 
-    private volatile int writeBufferHighWaterMark = 64 * 1024;
-    private volatile int writeBufferLowWaterMark  = 32 * 1024;
+    private volatile int writeBufferHighWaterMark = 64 * 1024;//高水位
+    private volatile int writeBufferLowWaterMark  = 32 * 1024;//低水位
     private volatile ReceiveBufferSizePredictor predictor;
     private volatile ReceiveBufferSizePredictorFactory predictorFactory = DEFAULT_PREDICTOR_FACTORY;
     private volatile int writeSpinCount = 16;

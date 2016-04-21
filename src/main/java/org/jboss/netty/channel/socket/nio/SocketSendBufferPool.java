@@ -60,6 +60,11 @@ final class SocketSendBufferPool implements ExternalResourceReleasable {
         return new FileSendBuffer(src);
     }
 
+    /**
+     * 分配buf,要好好看看
+     * @param src
+     * @return
+     */
     private SendBuffer acquire(ChannelBuffer src) {
         final int size = src.readableBytes();
         if (size == 0) {
